@@ -23,7 +23,7 @@ connection.connect(function (err) {
 
 //Show user items
 function showItems() {
-    var query = "SELECT id,product_name,price FROM products";
+    var query = "SELECT id,product_name,price,stock_quantity FROM products";
     connection.query(query, function (err, res) {
         if (err) throw err;
         for (var i = 0; i < res.length; i++) {
@@ -32,8 +32,10 @@ function showItems() {
                 res[i].id + ": " +
                 res[i].product_name +
                 ". $" +
-                res[i].price
+                res[i].price +
+                "Available: " + res[i].stock_quantity
             );
+            var quantityAvailable = res[i].stock_quantity;
         }
         //Prompt user to choose an item
         inquirer
@@ -42,16 +44,38 @@ function showItems() {
                     name: "chosenProduct",
                     type: "userInput",
                     message: "Which item would you like to purchase? Please enter the item number.",
+                },
+                {
+                    name: "chosenQ",
+                    type: "userInput",
+                    message: "How many do you want to order?",
                 }
+
             ])
             .then(function (getItem) {
-                
+                console.log(getItem.chosenQ);
+                console.log(getItem.chosenProduct);
+                console.log(res[getItem.chosenProduct].price);
                 console.log(getItem.chosenProduct)
                 //Save user's response as a variable
                 var chosenItemNo = getItem.chosenProduct;
                 console.log(res[chosenItemNo]);
                 console.log("You have chosen " + res[chosenItemNo].product_name + ". ")
-                //
+              //  console.log("Available: " + res[chosenItemNo].quantityAvailable)
+                //Check quantity available and store as variable qAvail
+                function checkQuantity() {
+                    console.log("Available: " + res[chosenItemNo].stock_quantity );
+                    if (res[chosenItemNo].stock_quantity < getItem.chosenQ) {
+                        console.log("Insufficient supply")
+                    
+                    } else {
+                        console.log("Thank you.")
+                        //updateQuantity();
+                    }
+                }
+                //  d
+                checkQuantity();
+                
             });
 
 
@@ -61,8 +85,15 @@ function showItems() {
 
 //Store user's choice as a variable
 
-//Check quantity available and store as variable qAvail
-
+//update Quantity
+/*function updateQuantity(){
+    var query = connection.query(
+        "UPDATE products SET ? WHERE ?",
+        [
+            {stock_quantity: }
+        ]
+    )
+}*/
 //Ask user how many of item he/she wants to order
 
 //Store chosenQ as variable
